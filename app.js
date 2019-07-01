@@ -18,12 +18,25 @@ connection.connect(function (err) {
 
 var makeTable = function () {
     connection.query("SELECT * FROM products", function (err, response) {
-        // console.log(response)
         for (var i = 0; i < response.length; i++) {
-            console.log(response[i].id + " || " + response[i].product_name + " || " + response[i].
+            console.log("We carry: " + "\n" + response[i].id + " || " + response[i].product_name + " || " + response[i].
                 department_name + " || " + response[i].price + " || " + response[i].stock_quantity + "\n");
-
         }
+
+        inquirer.prompt({
+            name: "toPurchase",
+            type: "input",
+            message: "What would you like to purchase?"
+        }).then(function (answer) {
+            var isPoss = false
+            for (var i = 0; i < response.length; i++) {
+                if (response[i].product_name === answer.choice) {
+                    isPoss = true;
+                    console.log(isPoss);
+                }
+
+            }
+        })
     })
 }
 
@@ -37,6 +50,7 @@ function customerGreeting() {
         })
         .then(function (answer) {
             if (answer.customerIntro.toUpperCase() === "YES") {
+
                 makeTable();
             }
             else {

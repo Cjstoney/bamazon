@@ -30,12 +30,49 @@ var makeTable = function () {
         }).then(function (answer) {
             var isPoss = false
             for (var i = 0; i < response.length; i++) {
-                if (response[i].product_name === answer.choice) {
+                if (response[i].id === answer.choice) {
                     isPoss = true;
-                    console.log(isPoss);
-                }
+                    var key = i;
+                    console.log(key);
+                    inquirer
+                        .prompt({
+                            name: "inventory",
+                            type: "input",
+                            message: "How many would you like to purchase?"
+                        }).then(function (answer) {
+                            if (inventory.answer < stock_quantity - inventoy.answer) {
+                                var newQuant = stock_quantity - inventory.answer;
+                                console.log("Great, we will send " + inventory.answer + " your way!");
+                                connection.query("UPDATE products SET ? WHERE?",
+                                    [{
+                                        stock_quantity: newQuant
+                                    },
+                                    {
+                                        id: key
+                                    }],
+                                    function (err, response) {
+                                        if (err) throw err;
+                                        console.log(res.affectedRows + " products updated! \n");
+                                    })
+                            }
+                        })
+                } 
+                
 
             }
+            console.log("I am sorry, that is not something we carry");
+            inquirer.prompt({
+                name: "continue",
+                type: "input",
+                message: "Would you like to continue?",
+                choices: ["YES", "NO"]
+            }).then(function(answer){
+                if(answer.continue.toUpperCase()==="YES"){
+                    makeTable();
+                }else{
+                    process.exit();
+                }
+            })
         })
     })
 }
@@ -60,35 +97,9 @@ function customerGreeting() {
         })
 }
 
-// function showProducts() {
-//     connection.query("SELECT id, product_name FROM products", function (err, results) {
-//         if (err) throw err;
-//         inquirer
-//             .prompt([
-//                 {
-//                     name: "product-choice",
-//                     type: "rawlist",
-//                     choices: function () {
-//                         var prodsArray = [];
-//                         for (var i = 0; i < results.length; i++) {
-//                             var id = results[i].id;
-//                             var name = results[i].product_name;
-//                             prodsArray.push(id, name);
-//                         }
-//                         return prodsArray;
-//                     },
-//                     message: "Please select the item that you are shopping for"
-//                 }
-//             ])
-//             .then(function(answer){
-//                 var custNeed = answer.product-choice;
-//                 getQuantity(custNeed)
-//                 // ask how many they would like.
-
-//             })
-//     })
-// }
-
+function checkAvailability() {
+    
+}
 // function getQuantity(something){
 //     if(anwer.quantity === something){
 

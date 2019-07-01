@@ -11,7 +11,6 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    // makeTable();
     console.log("connected");
     customerGreeting();
 });
@@ -28,21 +27,26 @@ var makeTable = function () {
             type: "input",
             message: "What would you like to purchase?"
         }).then(function (answer) {
+            // console.log(answer.toPurchase)
             var isPoss = false
             for (var i = 0; i < response.length; i++) {
-                if (response[i].id === answer.choice) {
+                // console.log(response)
+                if (response[i].id === parseInt(answer.toPurchase)) {
                     isPoss = true;
-                    var key = i;
-                    console.log(key);
+                    var wantedProduct = response[i];
+                    var key = [i];
+                    console.log(wantedProduct);
                     inquirer
                         .prompt({
                             name: "inventory",
                             type: "input",
                             message: "How many would you like to purchase?"
                         }).then(function (answer) {
-                            if (inventory.answer < stock_quantity - inventoy.answer) {
-                                var newQuant = stock_quantity - inventory.answer;
-                                console.log("Great, we will send " + inventory.answer + " your way!");
+                            var intAnsInventory = parseInt(answer.inventory);
+                            console.log(wantedProduct.stock_quantity);
+                            if (intAnsInventory < wantedProduct.stock_quantity - intAnsInventory) {
+                                var newQuant = wantedProduct.stock_quantity - intAnsInventory;
+                                console.log("Great, we will send " + intAnsInventory + " of the "+wantedProduct.product_name+ " your way!");
                                 connection.query("UPDATE products SET ? WHERE?",
                                     [{
                                         stock_quantity: newQuant
@@ -52,27 +56,17 @@ var makeTable = function () {
                                     }],
                                     function (err, response) {
                                         if (err) throw err;
-                                        console.log(res.affectedRows + " products updated! \n");
+                                        console.log(response.affectedRows + " products updated! \n");
+
                                     })
                             }
                         })
-                } 
-                
-
-            }
-            console.log("I am sorry, that is not something we carry");
-            inquirer.prompt({
-                name: "continue",
-                type: "input",
-                message: "Would you like to continue?",
-                choices: ["YES", "NO"]
-            }).then(function(answer){
-                if(answer.continue.toUpperCase()==="YES"){
-                    makeTable();
-                }else{
-                    process.exit();
                 }
-            })
+
+                
+            }
+                // wrong answer function here?
+            
         })
     })
 }
@@ -97,11 +91,19 @@ function customerGreeting() {
         })
 }
 
-function checkAvailability() {
-    
+function wrongAnswer(){
+    console.log("I am sorry, that is not something we carry");
+    inquirer.prompt({
+        name: "continue",
+        type: "input",
+        message: "Would you like to continue?",
+        choices: ["YES", "NO"]
+    }).then(function (answer) {
+        if (answer.continue.toUpperCase() === "YES") {
+            makeTable();
+        } else {
+            process.exit();
+        }
+    })
 }
-// function getQuantity(something){
-//     if(anwer.quantity === something){
 
-//     }
-// }

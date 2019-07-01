@@ -44,7 +44,7 @@ var makeTable = function () {
                         }).then(function (answer) {
                             var intAnsInventory = parseInt(answer.inventory);
                             console.log(wantedProduct.stock_quantity);
-                            if (intAnsInventory < wantedProduct.stock_quantity - intAnsInventory) {
+                            if (intAnsInventory <= wantedProduct.stock_quantity - intAnsInventory) {
                                 var newQuant = wantedProduct.stock_quantity - intAnsInventory;
                                 console.log("Great, we will send " + intAnsInventory + " of the "+wantedProduct.product_name+ " your way!");
                                 connection.query("UPDATE products SET ? WHERE?",
@@ -59,6 +59,8 @@ var makeTable = function () {
                                         console.log(response.affectedRows + " products updated! \n");
 
                                     })
+                            }else{
+                                console.log("I am sorry, we do not have that many in stock.")
                             }
                         })
                 }

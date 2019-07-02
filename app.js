@@ -49,7 +49,7 @@ var makeTable = function () {
                         }).then(function (answer) {
                             var gotEnough = false
                             var intAnsInventory = parseInt(answer.inventory);
-                            console.log(wantedProduct.stock_quantity);
+                            // console.log(wantedProduct.stock_quantity);
                             if (intAnsInventory <= wantedProduct.stock_quantity) {
                                 gotEnough = true
                                 var newQuant = wantedProduct.stock_quantity - intAnsInventory;
